@@ -1,0 +1,467 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="Хранилище user12Model" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Client">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="login" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="password" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Order">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="idStock" Type="int" Nullable="false" />
+          <Property Name="orderDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Product">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="barcode" Type="char" MaxLength="13" />
+          <Property Name="description" Type="nvarchar" MaxLength="100" />
+          <Property Name="price" Type="decimal" Precision="18" Scale="0" />
+        </EntityType>
+        <EntityType Name="ProductInOrder">
+          <Key>
+            <PropertyRef Name="idProduct" />
+            <PropertyRef Name="idOrder" />
+          </Key>
+          <Property Name="idProduct" Type="int" Nullable="false" />
+          <Property Name="idOrder" Type="int" Nullable="false" />
+          <Property Name="amountProduct" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ProductInStock">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="idProduct" Type="int" Nullable="false" />
+          <Property Name="idStock" Type="int" Nullable="false" />
+          <Property Name="amountMin" Type="int" Nullable="false" />
+          <Property Name="amountMax" Type="int" Nullable="false" />
+          <Property Name="amountCurrent" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Stock">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="idClient" Type="int" Nullable="false" />
+          <Property Name="barcodeScanerNumber" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
+        </EntityType>
+        <Association Name="FK_Order_Stock">
+          <End Role="Stock" Type="Self.Stock" Multiplicity="1" />
+          <End Role="Order" Type="Self.Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stock">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="idStock" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductInOrder_Order">
+          <End Role="Order" Type="Self.Order" Multiplicity="1" />
+          <End Role="ProductInOrder" Type="Self.ProductInOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ProductInOrder">
+              <PropertyRef Name="idOrder" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductInOrder_Product">
+          <End Role="Product" Type="Self.Product" Multiplicity="1" />
+          <End Role="ProductInOrder" Type="Self.ProductInOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ProductInOrder">
+              <PropertyRef Name="idProduct" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductInStock_Product">
+          <End Role="Product" Type="Self.Product" Multiplicity="1" />
+          <End Role="ProductInStock" Type="Self.ProductInStock" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ProductInStock">
+              <PropertyRef Name="idProduct" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductInStock_Stock">
+          <End Role="Stock" Type="Self.Stock" Multiplicity="1" />
+          <End Role="ProductInStock" Type="Self.ProductInStock" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stock">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ProductInStock">
+              <PropertyRef Name="idStock" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Stock_Client">
+          <End Role="Client" Type="Self.Client" Multiplicity="1" />
+          <End Role="Stock" Type="Self.Stock" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Client">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Stock">
+              <PropertyRef Name="idClient" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="Хранилище user12ModelContainer">
+          <EntitySet Name="Client" EntityType="Self.Client" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Order" EntityType="Self.Order" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Product" EntityType="Self.Product" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProductInOrder" EntityType="Self.ProductInOrder" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProductInStock" EntityType="Self.ProductInStock" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Stock" EntityType="Self.Stock" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Order_Stock" Association="Self.FK_Order_Stock">
+            <End Role="Stock" EntitySet="Stock" />
+            <End Role="Order" EntitySet="Order" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductInOrder_Order" Association="Self.FK_ProductInOrder_Order">
+            <End Role="Order" EntitySet="Order" />
+            <End Role="ProductInOrder" EntitySet="ProductInOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductInOrder_Product" Association="Self.FK_ProductInOrder_Product">
+            <End Role="Product" EntitySet="Product" />
+            <End Role="ProductInOrder" EntitySet="ProductInOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductInStock_Product" Association="Self.FK_ProductInStock_Product">
+            <End Role="Product" EntitySet="Product" />
+            <End Role="ProductInStock" EntitySet="ProductInStock" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductInStock_Stock" Association="Self.FK_ProductInStock_Stock">
+            <End Role="Stock" EntitySet="Stock" />
+            <End Role="ProductInStock" EntitySet="ProductInStock" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Stock_Client" Association="Self.FK_Stock_Client">
+            <End Role="Client" EntitySet="Client" />
+            <End Role="Stock" EntitySet="Stock" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="user12Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="user12Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Client" EntityType="user12Model.Client" />
+          <EntitySet Name="Order" EntityType="user12Model.Order" />
+          <EntitySet Name="Product" EntityType="user12Model.Product" />
+          <EntitySet Name="ProductInOrder" EntityType="user12Model.ProductInOrder" />
+          <EntitySet Name="ProductInStock" EntityType="user12Model.ProductInStock" />
+          <EntitySet Name="Stock" EntityType="user12Model.Stock" />
+          <EntitySet Name="sysdiagrams" EntityType="user12Model.sysdiagrams" />
+          <AssociationSet Name="FK_Stock_Client" Association="user12Model.FK_Stock_Client">
+            <End Role="Client" EntitySet="Client" />
+            <End Role="Stock" EntitySet="Stock" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Order_Stock" Association="user12Model.FK_Order_Stock">
+            <End Role="Stock" EntitySet="Stock" />
+            <End Role="Order" EntitySet="Order" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductInOrder_Order" Association="user12Model.FK_ProductInOrder_Order">
+            <End Role="Order" EntitySet="Order" />
+            <End Role="ProductInOrder" EntitySet="ProductInOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductInOrder_Product" Association="user12Model.FK_ProductInOrder_Product">
+            <End Role="Product" EntitySet="Product" />
+            <End Role="ProductInOrder" EntitySet="ProductInOrder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductInStock_Product" Association="user12Model.FK_ProductInStock_Product">
+            <End Role="Product" EntitySet="Product" />
+            <End Role="ProductInStock" EntitySet="ProductInStock" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProductInStock_Stock" Association="user12Model.FK_ProductInStock_Stock">
+            <End Role="Stock" EntitySet="Stock" />
+            <End Role="ProductInStock" EntitySet="ProductInStock" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Client">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="login" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="password" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Stock" Relationship="user12Model.FK_Stock_Client" FromRole="Client" ToRole="Stock" />
+        </EntityType>
+        <EntityType Name="Order">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="idStock" Type="Int32" Nullable="false" />
+          <Property Name="orderDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Stock" Relationship="user12Model.FK_Order_Stock" FromRole="Order" ToRole="Stock" />
+          <NavigationProperty Name="ProductInOrder" Relationship="user12Model.FK_ProductInOrder_Order" FromRole="Order" ToRole="ProductInOrder" />
+        </EntityType>
+        <EntityType Name="Product">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="barcode" Type="String" MaxLength="13" FixedLength="true" Unicode="false" />
+          <Property Name="description" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="price" Type="Decimal" Precision="18" Scale="0" />
+          <NavigationProperty Name="ProductInOrder" Relationship="user12Model.FK_ProductInOrder_Product" FromRole="Product" ToRole="ProductInOrder" />
+          <NavigationProperty Name="ProductInStock" Relationship="user12Model.FK_ProductInStock_Product" FromRole="Product" ToRole="ProductInStock" />
+        </EntityType>
+        <EntityType Name="ProductInOrder">
+          <Key>
+            <PropertyRef Name="idProduct" />
+            <PropertyRef Name="idOrder" />
+          </Key>
+          <Property Name="idProduct" Type="Int32" Nullable="false" />
+          <Property Name="idOrder" Type="Int32" Nullable="false" />
+          <Property Name="amountProduct" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Order" Relationship="user12Model.FK_ProductInOrder_Order" FromRole="ProductInOrder" ToRole="Order" />
+          <NavigationProperty Name="Product" Relationship="user12Model.FK_ProductInOrder_Product" FromRole="ProductInOrder" ToRole="Product" />
+        </EntityType>
+        <EntityType Name="ProductInStock">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="idProduct" Type="Int32" Nullable="false" />
+          <Property Name="idStock" Type="Int32" Nullable="false" />
+          <Property Name="amountMin" Type="Int32" Nullable="false" />
+          <Property Name="amountMax" Type="Int32" Nullable="false" />
+          <Property Name="amountCurrent" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Product" Relationship="user12Model.FK_ProductInStock_Product" FromRole="ProductInStock" ToRole="Product" />
+          <NavigationProperty Name="Stock" Relationship="user12Model.FK_ProductInStock_Stock" FromRole="ProductInStock" ToRole="Stock" />
+        </EntityType>
+        <EntityType Name="Stock">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="idClient" Type="Int32" Nullable="false" />
+          <Property Name="barcodeScanerNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Client" Relationship="user12Model.FK_Stock_Client" FromRole="Stock" ToRole="Client" />
+          <NavigationProperty Name="Order" Relationship="user12Model.FK_Order_Stock" FromRole="Stock" ToRole="Order" />
+          <NavigationProperty Name="ProductInStock" Relationship="user12Model.FK_ProductInStock_Stock" FromRole="Stock" ToRole="ProductInStock" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
+        <Association Name="FK_Stock_Client">
+          <End Type="user12Model.Client" Role="Client" Multiplicity="1" />
+          <End Type="user12Model.Stock" Role="Stock" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Client">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Stock">
+              <PropertyRef Name="idClient" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Order_Stock">
+          <End Type="user12Model.Stock" Role="Stock" Multiplicity="1" />
+          <End Type="user12Model.Order" Role="Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stock">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="idStock" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductInOrder_Order">
+          <End Type="user12Model.Order" Role="Order" Multiplicity="1" />
+          <End Type="user12Model.ProductInOrder" Role="ProductInOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ProductInOrder">
+              <PropertyRef Name="idOrder" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductInOrder_Product">
+          <End Type="user12Model.Product" Role="Product" Multiplicity="1" />
+          <End Type="user12Model.ProductInOrder" Role="ProductInOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ProductInOrder">
+              <PropertyRef Name="idProduct" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductInStock_Product">
+          <End Type="user12Model.Product" Role="Product" Multiplicity="1" />
+          <End Type="user12Model.ProductInStock" Role="ProductInStock" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ProductInStock">
+              <PropertyRef Name="idProduct" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProductInStock_Stock">
+          <End Type="user12Model.Stock" Role="Stock" Multiplicity="1" />
+          <End Type="user12Model.ProductInStock" Role="ProductInStock" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Stock">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ProductInStock">
+              <PropertyRef Name="idStock" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="Хранилище user12ModelContainer" CdmEntityContainer="user12Entities">
+          <EntitySetMapping Name="Client">
+            <EntityTypeMapping TypeName="user12Model.Client">
+              <MappingFragment StoreEntitySet="Client">
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="login" ColumnName="login" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Order">
+            <EntityTypeMapping TypeName="user12Model.Order">
+              <MappingFragment StoreEntitySet="Order">
+                <ScalarProperty Name="orderDate" ColumnName="orderDate" />
+                <ScalarProperty Name="idStock" ColumnName="idStock" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Product">
+            <EntityTypeMapping TypeName="user12Model.Product">
+              <MappingFragment StoreEntitySet="Product">
+                <ScalarProperty Name="price" ColumnName="price" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="barcode" ColumnName="barcode" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProductInOrder">
+            <EntityTypeMapping TypeName="user12Model.ProductInOrder">
+              <MappingFragment StoreEntitySet="ProductInOrder">
+                <ScalarProperty Name="amountProduct" ColumnName="amountProduct" />
+                <ScalarProperty Name="idOrder" ColumnName="idOrder" />
+                <ScalarProperty Name="idProduct" ColumnName="idProduct" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProductInStock">
+            <EntityTypeMapping TypeName="user12Model.ProductInStock">
+              <MappingFragment StoreEntitySet="ProductInStock">
+                <ScalarProperty Name="amountCurrent" ColumnName="amountCurrent" />
+                <ScalarProperty Name="amountMax" ColumnName="amountMax" />
+                <ScalarProperty Name="amountMin" ColumnName="amountMin" />
+                <ScalarProperty Name="idStock" ColumnName="idStock" />
+                <ScalarProperty Name="idProduct" ColumnName="idProduct" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Stock">
+            <EntityTypeMapping TypeName="user12Model.Stock">
+              <MappingFragment StoreEntitySet="Stock">
+                <ScalarProperty Name="barcodeScanerNumber" ColumnName="barcodeScanerNumber" />
+                <ScalarProperty Name="idClient" ColumnName="idClient" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="user12Model.sysdiagrams">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="definition" ColumnName="definition" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Нет" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
