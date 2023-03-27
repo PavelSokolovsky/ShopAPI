@@ -9,45 +9,24 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApplication1.Models;
+using WebApplication1.Respons;
 
 namespace WebApplication1.Controllers
 {
     public class ProductInStocksController : ApiController
     {
         private user12Entities db = new user12Entities();
-        
-        // GET: api/ProductInStocks
-        public IQueryable<ProductInStock> GetProductInStock()
-        {
-            return db.ProductInStock;
-        }
-        [Route("api/inStock")]
-        [ResponseType(typeof(Respons.ResponceProductInStock))]
-        public IHttpActionResult GetInStock()
-        {
-            var goods = db.ProductInStock.ToList();
-            if (goods == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                return Ok();
-            }
-        }
-        
 
-        // GET: api/ProductInStocks/5
-        [ResponseType(typeof(Product))]
+        [ResponseType(typeof(ProductInStock))]
         public IHttpActionResult GetProductInStock(int id)
         {
-            List<ProductInStock> productInStock = db.ProductInStock.Where(i => i.Stock.idClient == id).ToList();
-            if (productInStock == null)
+            List<ProductInStock> order = db.ProductInStock.Where(i => i.Stock.idClient == id).ToList();
+            if (order == null)
             {
                 return NotFound();
             }
 
-            return Ok(productInStock.ConvertAll(i => new Respons.ResponceProductInStock(i)));
+            return Ok(order.ConvertAll<ResponceProductInStock>(i =>  new ResponceProductInStock(i)));
         }
 
         // PUT: api/ProductInStocks/5
@@ -63,19 +42,21 @@ namespace WebApplication1.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/ProductInStocks
+        [Route("api/ProductInStocks")]
         [ResponseType(typeof(ProductInStock))]
-        public IHttpActionResult PostProductInStock(ProductInStock productInStock)
+        [HttpPost]
+        public IHttpActionResult PostProductInStock(string barcode, int idStock, int amountMin, int amountMax, int amountCurrent)
         {
+            var content = db.Product.FirstOrDefault(i => i.barcode == barcode);
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.ProductInStock.Add(productInStock);
+            db.ProductInStock.Add(new ProductInStock { idProduct = content.id, idStock = idStock, amountMin = amountMin, amountMax = amountMax, amountCurrent = amountCurrent });
             db.SaveChanges();
 
-            return CreatedAtRoute("DefaultApi", new { id = productInStock.id }, productInStock);
+            return Ok();
         }
 
         // DELETE: api/ProductInStocks/5
