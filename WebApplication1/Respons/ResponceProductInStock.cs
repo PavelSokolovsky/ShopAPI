@@ -17,6 +17,7 @@ namespace WebApplication1.Respons
             
         }
         public Product Product;
+
         public int Min ;
         public int Max ;
         public int Current ;
